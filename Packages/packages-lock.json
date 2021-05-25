@@ -80,6 +80,13 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "ga.fuquna.rapidgui": {
+      "version": "https://github.com/fuqunaga/RapidGUI.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "4b29d1937ac3642811e204708e97e516dd91cb96"
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

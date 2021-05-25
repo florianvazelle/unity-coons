@@ -42,13 +42,11 @@ public class Curve
             {   
                 // Calcule Vecteur et les point Corner
                 // https://math.stackexchange.com/questions/175896/finding-a-point-along-a-line-a-certain-distance-away-from-another-point
-                Vector3 Pv = (cloneEdges[i].end - cloneEdges[i].start);
-                Vector3 Pu = Pv.normalized;
+                Vector3 direction = (cloneEdges[i].end - cloneEdges[i].start).normalized;
+                float distance = Vector3.Distance(cloneEdges[i].start, cloneEdges[i].end);
 
-                float d = Vector3.Distance(cloneEdges[i].start, cloneEdges[i].end);
-
-                Vector3 PCorner = cloneEdges[i].start + (u * d) * Pu;
-                Vector3 PCorner2 = cloneEdges[i].start + ((u + (1 - (u + v))) * d) * Pu;
+                Vector3 PCorner = cloneEdges[i].start + (u * distance) * direction;
+                Vector3 PCorner2 = cloneEdges[i].start + ((u + (1 - (u + v))) * distance) * direction;
 
                 if (lastPCorner != null) {
                     subEdges.Add(new Edge((Vector3)lastPCorner, PCorner));

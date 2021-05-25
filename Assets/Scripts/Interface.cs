@@ -51,6 +51,12 @@ public class Interface : MonoBehaviour
             lastPoint = worldPosition;
             Instantiate(pointPrefab, worldPosition, Quaternion.identity);
         }
+        
+        if (Input.GetMouseButtonDown(2))
+        {
+            curves[0] = curves[0].SimpleCornerCutting(0.2f, 0.2f, 2);
+        }
+        
     }
 
     private void OnGUI() {

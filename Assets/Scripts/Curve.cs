@@ -25,25 +25,32 @@ public class Curve
 
     public Curve SimpleCornerCutting(float u, float v, int nbSubDiv)
     {
+        Debug.Assert(u > 0);
+        Debug.Assert(v > 0);
+        Debug.Assert(u + v < 1);
+
         Curve CurveOut = new Curve();
-        Vector3? lastPCorner = null;
         List<Edge> cloneEdges = new List<Edge>(edges);
 
         for (int j = 0; j < nbSubDiv; j++)
         {
+            Vector3? lastPCorner = null;
             List<Edge> subEdges = new List<Edge>();
             
             //Creation d'une courbe subdiviser
             for (int i = 0; i < cloneEdges.Count; i++)
-            {
-                //calcule Vecteur et les point Corner
-                Vector3 uv = (cloneEdges[i].start + cloneEdges[i].end).normalized;
-                Vector3 PCorner = uv * u;
-                Vector3 vu = (cloneEdges[i].end + cloneEdges[i].start).normalized;
-                Vector3 PCorner2 = vu * v;
+            {   
+                // Calcule Vecteur et les point Corner
+                // https://math.stackexchange.com/questions/175896/finding-a-point-along-a-line-a-certain-distance-away-from-another-point
+                Vector3 Pv = (cloneEdges[i].end - cloneEdges[i].start);
+                Vector3 Pu = Pv.normalized;
 
-                if (lastPCorner != null)
-                {
+                float d = Vector3.Distance(cloneEdges[i].start, cloneEdges[i].end);
+
+                Vector3 PCorner = cloneEdges[i].start + (u * d) * Pu;
+                Vector3 PCorner2 = cloneEdges[i].start + ((u + (1 - (u + v))) * d) * Pu;
+
+                if (lastPCorner != null) {
                     subEdges.Add(new Edge((Vector3)lastPCorner, PCorner));
                 }
 
@@ -54,9 +61,9 @@ public class Curve
             }
 
             cloneEdges = new List<Edge>(subEdges);
-            
         }
 
+        CurveOut.edges = new List<Edge>(cloneEdges);
 
         return CurveOut;
     }

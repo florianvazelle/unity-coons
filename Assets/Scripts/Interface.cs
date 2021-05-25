@@ -54,7 +54,7 @@ public class Interface : MonoBehaviour
         
         if (Input.GetMouseButtonDown(2))
         {
-            curves[0] = curves[0].SimpleCornerCutting(0.2f, 0.2f, 2);
+            curves.Add(curves[0].SimpleCornerCutting(0.2f, 0.2f, 2));
         }
         
     }

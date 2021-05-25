@@ -51,12 +51,12 @@ public class Interface : MonoBehaviour
                 curves[curveIndex].Add((Vector3)lastPoint, worldPosition);
             }
             lastPoint = worldPosition;
-            Instantiate(pointPrefab, worldPosition, Quaternion.identity);
+            // Instantiate(pointPrefab, worldPosition, Quaternion.identity);
         }
         
         if (Input.GetMouseButtonDown(2))
         {
-            curves.Add(curves[0].SimpleCornerCutting(0.2f, 0.2f, 2));
+            curves.Add(curves[0].SimpleCornerCutting(0.25f, 0.25f, 2));
         }
         
     }

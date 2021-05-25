@@ -25,9 +25,9 @@ public class Curve
 
     public Curve SimpleCornerCutting(float u, float v, int nbSubDiv)
     {
-        Debug.Assert(u > 0);
-        Debug.Assert(v > 0);
-        Debug.Assert(u + v < 1);
+        Debug.Assert(u >= 0);
+        Debug.Assert(v >= 0);
+        Debug.Assert(u + v <= 1);
 
         Curve CurveOut = new Curve();
         List<Edge> cloneEdges = new List<Edge>(edges);

@@ -8,16 +8,27 @@ using static InterfaceUtils;
 public class Interface2D : MonoBehaviour
 {
     public GameObject pointPrefab;
-    public Color lineColor;
 
     private Rect windowRect = new Rect(0, 0, 250, 500);     // Rect window for ImGUI
-    private Material lineMat;                               // Voronoi Line material
-    private List<Edge> edges;                               // Temporaly list with result of Voronoi
+    private List<Curve> curve;
+    private Event event;
 
     void Start() {
-        lineMat = new Material(Shader.Find("Unlit/Color"));
-        lineMat.color = lineColor;
-        edges = new List<Edge>();
+        curve = new List<Edge>();
+        event = new Event();
+    }
+
+    void Update() {
+        if (Input.GetMouseButtonDown(1)) {
+            Debug.Log("create Point");
+            Vector3 worldPosition = new Vector3();
+            Vector2 mousePosition = new Vector2();
+
+            mousePosition.x = event.mousePosition.x;
+            mousePosition.y = cam.pixelHeight - event.mousePosition.y;
+            worldPosition = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, 10)); // TODO : faire l'axe Z paramètrable
+            Instantiate(pointPrefab, worldPosition, Quaternion.identity);
+        }
     }
 
     private void OnGUI() {
@@ -28,17 +39,12 @@ public class Interface2D : MonoBehaviour
     }
 
     void OnPostRender() {
-        foreach (var edge in edges) {
-            GL.Begin(GL.LINES);
-            lineMat.SetPass(0);
-            GL.Color(new Color(lineMat.color.r, lineMat.color.g, lineMat.color.b, lineMat.color.a));
-            GL.Vertex3(edge.start.x, edge.start.y, 0f);
-            GL.Vertex3(edge.end.x, edge.end.y, 0f);
-            GL.End();
+        foreach (var curve in curves) {
+            curve.render();
         }
     }
 
     public void ResetData() {
-        edges.Clear();
+        curve.Clear();
     }
 }

@@ -1,14 +1,14 @@
 using UnityEngine;
 
 public struct Edge {
-    public Vector2 start, end;
+    public Vector3 start, end;
 
-    public Edge(Vector2 s, Vector2 e) {
+    public Edge(Vector3 s, Vector3 e) {
         start = s;
         end = e;
     }
 
-    public bool Contains(Vector2 point) {
+    public bool Contains(Vector3 point) {
         return (start == point || end == point);
     }
 

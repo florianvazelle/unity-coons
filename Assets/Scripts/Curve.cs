@@ -45,8 +45,8 @@ public class Curve
                 Vector3 direction = (cloneEdges[i].end - cloneEdges[i].start).normalized;
                 float distance = Vector3.Distance(cloneEdges[i].start, cloneEdges[i].end);
 
-                Vector3 PCorner = cloneEdges[i].start + (u * distance) * direction;
-                Vector3 PCorner2 = cloneEdges[i].start + ((u + (1 - (u + v))) * distance) * direction;
+                Vector3 PCorner = CurveUtils.ProjectionPoint(cloneEdges[i], u);
+                Vector3 PCorner2 = CurveUtils.ProjectionPoint(cloneEdges[i], u + (1 - (u + v)));
 
                 if (lastPCorner != null) {
                     Edge edge1 = new Edge((Vector3)lastPCorner, PCorner);

@@ -3,6 +3,15 @@ using UnityEngine;
 
 public static class CurveUtils 
 {
+    static public Vector3 ProjectionPoint(Edge edge, float u) {
+        Debug.Assert(0 <= u && u <= 1);
+
+        Vector3 direction = (edge.end - edge.start).normalized;
+        float distance = Vector3.Distance(edge.start, edge.end);
+
+        return edge.start + (u * distance) * direction;
+    }
+
     static public void constructSurface(ref List<Curve> curves, int idx1, int idx2) { // Curve c1, Curve c2
         // voir pour debug si l'index n'existe pas
         if(curves[idx1].edges.Count != curves[idx2].edges.Count) {

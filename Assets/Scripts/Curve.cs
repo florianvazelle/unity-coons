@@ -3,22 +3,25 @@ using UnityEngine;
 
 public class Curve {
     public List<Edge> edges; 
-    private Material lineMat; // Materiaux pour dessiner les lignes
 
     public Curve() {
         edges = new List<Edge>();
-        lineMat = new Material(Shader.Find("Unlit/Color"));
-        lineMat.color = new Color(0, 0, 0);
+    }
+
+    public void Add(Vector3 pointA, Vector3 pointB) {
+        edges.Add(new Edge(pointA, pointB));
     }
 
     public void Render() {
         foreach (var edge in edges) {
-            GL.Begin(GL.LINES);
-            lineMat.SetPass(0);
-            GL.Color(new Color(lineMat.color.r, lineMat.color.g, lineMat.color.b, lineMat.color.a));
-            GL.Vertex3(edge.start.x, edge.start.y, edge.start.z);
-            GL.Vertex3(edge.end.x, edge.end.y, edge.start.z);
-            GL.End();
+            edge.Render();
+        }
+
+        // Display real-time mouse movement
+        if (edges.Count > 0) {
+            // Vector3 worldPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)); // TODO : faire l'axe Z paramètrable
+            // Edge tmp = new Edge(edges[edges.Count - 1].end, worldPosition);
+            // tmp.Render();
         }
     }
 }

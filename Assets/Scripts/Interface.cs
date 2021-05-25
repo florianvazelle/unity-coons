@@ -4,19 +4,17 @@ using UnityEngine;
 using RapidGUI;
 using static InterfaceUtils;
 
-public class Interface2D : MonoBehaviour
+public class Interface : MonoBehaviour
 {
     public GameObject pointPrefab;
 
     private Rect windowRect = new Rect(0, 0, 250, 500);     // Rect window for ImGUI
     private List<Curve> curves;
     private Camera cam;
-    private Event Event;
 
     void Start() {
         curves = new List<Curve>();
         cam = Camera.main;
-        Event = new Event();
     }
 
     void Update() {
@@ -25,8 +23,8 @@ public class Interface2D : MonoBehaviour
             Vector3 worldPosition = new Vector3();
             Vector2 mousePosition = new Vector2();
 
-            mousePosition.x = Event.mousePosition.x;
-            mousePosition.y = cam.pixelHeight - Event.mousePosition.y;
+            mousePosition.x = Input.mousePosition.x;
+            mousePosition.y = Input.mousePosition.y;
             worldPosition = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, 10)); // TODO : faire l'axe Z paramètrable
             Instantiate(pointPrefab, worldPosition, Quaternion.identity);
         }

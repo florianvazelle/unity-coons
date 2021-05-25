@@ -31,23 +31,22 @@ public static class CurveUtils
         return edges;
     }
 
-    static public List<Vector3> SplitEdge(Edge e, int nbSplit) {
+    static public List<List<Vector3>> SplitEdges(List<Edge> e, int nbSplit) {
+        List<List<Vector3>> subPoints = new List<List<Vector3>>();
+        for (int j = 0; j < e.Count; j++) {
+            subPoints.Add(new List<Vector3>());
 
-        List<Vector3> subPoints = new List<Vector3>();
+            for (int i = 0; i < nbSplit; i++) {
+                Vector3 direction = (e[j].end - e[j].start).normalized;
+                float distance = Vector3.Distance(e[j].start, e[j].end);
 
-        for (int i =0; i < nbSplit; i++)
-        {
-            Vector3 direction = (e.end - e.start).normalized;
-            float distance = Vector3.Distance(e.start, e.end);
-
-            Vector3 Point = e.start + (i * 0.25f * distance) * direction;
-            
-            subPoints.Add(Point);
-
+                Vector3 Point = e[j].start + (i * (1.0f / nbSplit) * distance) * direction;
+                
+                subPoints[j].Add(Point);
+            }
         }
 
         return subPoints;
-
     }
 
     static List<List<Vector3>> ComputePoint(Curve c1, Curve c2, int nbSubdiv) {
@@ -74,7 +73,7 @@ public static class CurveUtils
         return ComputePoint(c1, c2, nbSubdiv);
     }
     
-    static List<Curve> Coons(Curve c1, Curve c2, Curve c3, Curve c4) {
+    static public List<Curve> Coons(Curve c1, Curve c2, Curve c3, Curve c4) {
         int nbSubdiv = 5;
 
         List<List<Vector3>> a = ComputePoint(c1, c2, nbSubdiv);
@@ -89,7 +88,7 @@ public static class CurveUtils
 
         List<Curve> curves = new List<Curve>();
         for (int i = 0; i < a.Count; i++) {
-            curves[i] = new Curve();
+            curves.Add(new Curve());
 
             for (int j = 0; j < b.Count; j++) {
 
@@ -101,7 +100,7 @@ public static class CurveUtils
         }
 
         for (int j = 0; j < b.Count; j++) {
-            curves[j + a.Count] = new Curve();
+            curves.Add(new Curve());
             
             for (int i = 0; i < a.Count; i++) {
 

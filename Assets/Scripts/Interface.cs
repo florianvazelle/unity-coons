@@ -12,7 +12,6 @@ public class Interface : MonoBehaviour
 
     public GameObject pointPrefab;
 
-    private Rect windowRect = new Rect(0, 0, 300, 200);     // Rect window for ImGUI
     private List<Curve> curves;
     private Vector3? lastPoint;
     private int curveIndex;
@@ -39,6 +38,13 @@ public class Interface : MonoBehaviour
             mousePosition.x = Input.mousePosition.x;
             mousePosition.y = Input.mousePosition.y;
             worldPosition = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, 10)); // TODO : faire l'axe Z paramètrable
+
+            if (lastPoint == null) {
+                if (curves[curveIndex].edges.Count > 0) {
+                    lastPoint = curves[curveIndex].edges[curves[curveIndex].edges.Count - 1].end;
+                }
+            }
+
             if (lastPoint != null) {
                 curves[curveIndex].Add((Vector3)lastPoint, worldPosition);
             }
@@ -48,11 +54,15 @@ public class Interface : MonoBehaviour
     }
 
     private void OnGUI() {
-        windowRect = GUI.ModalWindow(GetHashCode(), windowRect, DoGUI, "Actions", RGUIStyle.darkWindow);
+        if ( transform.parent == null)
+        {
+            GUILayout.Label("Actions");
+            DoGUI();
+        }
     }
 
-    public void DoGUI(int windowID) {
-       int curveIndexOld = RGUI.Slider(curveIndex, 0, MAX_CURVES, "Current curve:" + curveIndex);
+    public void DoGUI() {
+       int curveIndexOld = RGUI.Slider(curveIndex, 0, MAX_CURVES, $"Current curve: {curveIndex}");
        if (curveIndexOld != curveIndex) {
            lastPoint = null;
            curveIndex = curveIndexOld;

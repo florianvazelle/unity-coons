@@ -93,7 +93,7 @@ public class Interface : MonoBehaviour
            lastPoint = null;
            curveConstructorIndex2 = curve2;
        }
-       if (GUILayout.Button("Construct Surface")) CurveUtils.constructSurface(ref curves, curveConstructorIndex1, curveConstructorIndex2);
+    //    if (GUILayout.Button("Construct Surface")) CurveUtils.constructSurface(ref curves, curveConstructorIndex1, curveConstructorIndex2);
     }
 
     void OnPostRender() {

@@ -12,25 +12,23 @@ public static class CurveUtils
         return edge.start + (u * distance) * direction;
     }
 
-    static public void constructSurface(ref List<Curve> curves, int idx1, int idx2) { // Curve c1, Curve c2
+    static public List<Edge> ConstructFace(Curve c1, Curve c2) { // Curve c1, Curve c2
         // voir pour debug si l'index n'existe pas
-        if(curves[idx1].edges.Count != curves[idx2].edges.Count) {
+        if(c1.edges.Count != c2.edges.Count) {
             Debug.Log("Curves doesn't have the same amount of points");
-            return;
+            return new List<Edge>();
         }
-        Debug.Log(curves.Count);
-        for (int i = 0; i < curves[idx1].edges.Count; i++){
-            Curve c = new Curve();
-            c.Add(curves[idx1].edges[i].start, curves[idx2].edges[i].start);
-            curves.Add(c);
 
-            if(i == curves[idx1].edges.Count - 1){
-                Curve cend = new Curve();
-                cend.Add(curves[idx1].edges[i].end, curves[idx2].edges[i].end);
-                curves.Add(cend);
+        List<Edge> edges = new List<Edge>();
+        for (int i = 0; i < c1.edges.Count; i++){
+            edges.Add(new Edge(c1.edges[i].start, c2.edges[i].start));
+
+            if(i == c1.edges.Count - 1){
+                edges.Add(new Edge(c1.edges[i].end, c2.edges[i].end));
             }
         }
-        Debug.Log(curves.Count);
+
+        return edges;
     }
 
     static List<List<Vector3>> ComputePoint(Curve c1, Curve c2, int nbSubdiv) {
@@ -41,10 +39,18 @@ public static class CurveUtils
         List<List<Vector3>> lines = SplitEdges(border, nbSubdiv);
 
         Curve c1 = new Curve();
-        c1.edges = lines[0];
+        List<Edge> tmp1 = new List<Edge>();
+        for(int i = 0; i < lines[0].Count - 1; i++) {
+            tmp1.Add(new Edge(lines[0][i], lines[0][i + 1]));
+        }
+        c1.edges = tmp1;
 
         Curve c2 = new Curve();
-        c2.edges = lines[1];
+        List<Edge> tmp2 = new List<Edge>();
+        for(int i = 0; i < lines[1].Count - 1; i++) {
+            tmp2.Add(new Edge(lines[1][i], lines[1][i + 1]));
+        }
+        c2.edges = tmp2;
 
         return ComputePoint(c1, c2, nbSubdiv);
     }
@@ -52,38 +58,38 @@ public static class CurveUtils
     static List<Curve> Coons(Curve c1, Curve c2, Curve c3, Curve c4) {
         int nbSubdiv = 5;
 
-        List<List<Vector3>> a1 = ComputePoint(c1, c2, nbSubdiv);
-        List<List<Vector3>> b1 = ComputePoint(c3, c4, nbSubdiv);
+        List<List<Vector3>> a = ComputePoint(c1, c2, nbSubdiv);
+        List<List<Vector3>> b = ComputePoint(c3, c4, nbSubdiv);
 
         List<Edge> border = new List<Edge>() {
             new Edge(c1.edges[0].start, c1.edges[c1.edges.Count - 1].end),
             new Edge(c2.edges[0].start, c2.edges[c2.edges.Count - 1].end),
         };
 
-        List<List<Vector3>> c1 = GenerateBox(border, nbSubdiv);
+        List<List<Vector3>> c = GenerateBox(border, nbSubdiv);
 
         List<Curve> curves = new List<Curve>();
-        for (int i = 0; i < a1.Count; i++) {
+        for (int i = 0; i < a.Count; i++) {
             curves[i] = new Curve();
 
-            for (int j = 0; j < b1.Count; j++) {
+            for (int j = 0; j < b.Count; j++) {
 
-                Vector3 p1 = a1[i][j] + b1[j][i] - c1[i][j];
-                Vector3 p2 = a1[i][j + 1] + b1[j + 1][i] - c1[i][j + 1];
+                Vector3 p1 = a[i][j] + b[j][i] - c[i][j];
+                Vector3 p2 = a[i][j + 1] + b[j + 1][i] - c[i][j + 1];
 
                 curves[i].Add(p1, p2);
             }
         }
 
-        for (int j = 0; j < b1.Count; j++) {
-            curves[i] = new Curve();
+        for (int j = 0; j < b.Count; j++) {
+            curves[j + a.Count] = new Curve();
             
-            for (int i = 0; i < a1.Count; i++) {
+            for (int i = 0; i < a.Count; i++) {
 
-                Vector3 p1 = a1[i][j] + b1[j][i] - c1[i][j];
-                Vector3 p2 = a1[i + 1][j] + b1[j][i + 1] - c1[i + 1][j];
+                Vector3 p1 = a[i][j] + b[j][i] - c[i][j];
+                Vector3 p2 = a[i + 1][j] + b[j][i + 1] - c[i + 1][j];
 
-                curves[j + a1.Count].Add(p1, p2);
+                curves[j + a.Count].Add(p1, p2);
             }
         }
 

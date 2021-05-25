@@ -75,18 +75,19 @@ public class Interface : MonoBehaviour
            lastPoint = null;
            curveIndex = curveIndexOld;
        }
+       // Surface constructor interface
        GUILayout.Label("Surface constructor");
-       int curve1 = RGUI.Slider(curveConstructorIndex1, 0, MAX_CURVES, "curve 1: " + curveConstructorIndex1);
+       int curve1 = RGUI.Slider(curveConstructorIndex1, 0, MAX_CURVES, $"curve 1: {curveConstructorIndex1}");
        if (curve1 != curveConstructorIndex1) {
            lastPoint = null;
            curveConstructorIndex1 = curve1;
        }
-       int curve2 = RGUI.Slider(curveConstructorIndex2, 0, MAX_CURVES, "curve 2: " + curveConstructorIndex2);
+       int curve2 = RGUI.Slider(curveConstructorIndex2, 0, MAX_CURVES, $"curve 2: {curveConstructorIndex2}");
        if (curve2 != curveConstructorIndex2) {
            lastPoint = null;
            curveConstructorIndex2 = curve2;
        }
-       if (GUILayout.Button("Construct Surface")) CurveUtils.constructSurface();
+       if (GUILayout.Button("Construct Surface")) CurveUtils.constructSurface(ref curves, curveConstructorIndex1, curveConstructorIndex2);
     }
 
     void OnPostRender() {

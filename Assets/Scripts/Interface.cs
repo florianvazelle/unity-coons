@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using RapidGUI;
@@ -10,12 +9,14 @@ public class Interface2D : MonoBehaviour
     public GameObject pointPrefab;
 
     private Rect windowRect = new Rect(0, 0, 250, 500);     // Rect window for ImGUI
-    private List<Curve> curve;
-    private Event event;
+    private List<Curve> curves;
+    private Camera cam;
+    private Event Event;
 
     void Start() {
-        curve = new List<Edge>();
-        event = new Event();
+        curves = new List<Curve>();
+        cam = Camera.main;
+        Event = new Event();
     }
 
     void Update() {
@@ -24,8 +25,8 @@ public class Interface2D : MonoBehaviour
             Vector3 worldPosition = new Vector3();
             Vector2 mousePosition = new Vector2();
 
-            mousePosition.x = event.mousePosition.x;
-            mousePosition.y = cam.pixelHeight - event.mousePosition.y;
+            mousePosition.x = Event.mousePosition.x;
+            mousePosition.y = cam.pixelHeight - Event.mousePosition.y;
             worldPosition = cam.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, 10)); // TODO : faire l'axe Z paramètrable
             Instantiate(pointPrefab, worldPosition, Quaternion.identity);
         }
@@ -40,11 +41,11 @@ public class Interface2D : MonoBehaviour
 
     void OnPostRender() {
         foreach (var curve in curves) {
-            curve.render();
+            curve.Render();
         }
     }
 
     public void ResetData() {
-        curve.Clear();
+        curves.Clear();
     }
 }

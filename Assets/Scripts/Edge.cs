@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public struct Edge {
+public class Edge {
     public Vector3 start, end;
 
     public Edge(Vector3 s, Vector3 e) {

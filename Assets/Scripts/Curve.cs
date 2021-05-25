@@ -1,16 +1,17 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-public struct Curve {
+public class Curve {
     public List<Edge> edges; 
     private Material lineMat; // Materiaux pour dessiner les lignes
 
     public Curve() {
         edges = new List<Edge>();
         lineMat = new Material(Shader.Find("Unlit/Color"));
-        lineMat.color = Color(0, 0, 0);
+        lineMat.color = new Color(0, 0, 0);
     }
 
-    public render() {
+    public void Render() {
         foreach (var edge in edges) {
             GL.Begin(GL.LINES);
             lineMat.SetPass(0);

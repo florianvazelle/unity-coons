@@ -49,11 +49,15 @@ public class Curve
                 Vector3 PCorner2 = cloneEdges[i].start + ((u + (1 - (u + v))) * distance) * direction;
 
                 if (lastPCorner != null) {
-                    subEdges.Add(new Edge((Vector3)lastPCorner, PCorner));
+                    Edge edge1 = new Edge((Vector3)lastPCorner, PCorner);
+                    edge1.lineMat.color = new Color(1, 0, 0);
+                    subEdges.Add(edge1);
                 }
 
                 //Ajouter les point Corner dans une nouvelle liste
-                subEdges.Add(new Edge(PCorner, PCorner2));
+                Edge edge2 = new Edge(PCorner, PCorner2);
+                edge2.lineMat.color = new Color(1, 0, 0);
+                subEdges.Add(edge2);
                 lastPCorner = PCorner2;
 
             }

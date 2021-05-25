@@ -15,6 +15,7 @@ public class Interface : MonoBehaviour
     private List<Curve> curves;
     private Vector3? lastPoint;
     private int curveIndex;
+    private int subDivision;
     private int curveConstructorIndex1;
     private int curveConstructorIndex2;
     private Camera cam;
@@ -24,9 +25,10 @@ public class Interface : MonoBehaviour
         lastPoint = null;     
         curveIndex = 0;
         cam = Camera.main;
+        subDivision = 0;
 
         // Pool curve
-        for (int i = 0; i < MAX_CURVES; i++) {
+        for (int i = 0; i < MAX_CURVES * 2; i++) {
             curves.Add(new Curve());
         }
     }
@@ -54,9 +56,11 @@ public class Interface : MonoBehaviour
             // Instantiate(pointPrefab, worldPosition, Quaternion.identity);
         }
         
-        if (Input.GetMouseButtonDown(2))
-        {
-            curves.Add(curves[0].SimpleCornerCutting(0.25f, 0.25f, 2));
+        curves[curveIndex + MAX_CURVES] = curves[0].SimpleCornerCutting(0.25f, 0.25f, subDivision);
+
+        if (Input.GetAxis("Mouse ScrollWheel") != 0) {
+            subDivision += (Input.GetAxis("Mouse ScrollWheel") > 0 ? 1 : -1);
+            subDivision = (int)Mathf.Clamp(subDivision, 0, 6);
         }
         
     }
@@ -75,6 +79,8 @@ public class Interface : MonoBehaviour
            lastPoint = null;
            curveIndex = curveIndexOld;
        }
+       GUILayout.Label($"Subdivision: {subDivision}");
+       
        // Surface constructor interface
        GUILayout.Label("Surface constructor");
        int curve1 = RGUI.Slider(curveConstructorIndex1, 0, MAX_CURVES, $"curve 1: {curveConstructorIndex1}");

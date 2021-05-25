@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Edge {
     public Vector3 start, end;
-    private Material lineMat; // Materiaux pour dessiner les lignes
+    public Material lineMat; // Materiaux pour dessiner les lignes
 
     public Edge(Vector3 s, Vector3 e) {
         start = s;

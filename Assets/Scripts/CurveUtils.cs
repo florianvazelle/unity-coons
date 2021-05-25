@@ -32,4 +32,61 @@ public static class CurveUtils
         }
         Debug.Log(curves.Count);
     }
+
+    static List<List<Vector3>> ComputePoint(Curve c1, Curve c2, int nbSubdiv) {
+        return SplitEdges(ConstructFace(c1, c2), nbSubdiv);
+    }
+
+    static List<List<Vector3>> GenerateBox(List<Edge> border, int nbSubdiv) {
+        List<List<Vector3>> lines = SplitEdges(border, nbSubdiv);
+
+        Curve c1 = new Curve();
+        c1.edges = lines[0];
+
+        Curve c2 = new Curve();
+        c2.edges = lines[1];
+
+        return ComputePoint(c1, c2, nbSubdiv);
+    }
+    
+    static List<Curve> Coons(Curve c1, Curve c2, Curve c3, Curve c4) {
+        int nbSubdiv = 5;
+
+        List<List<Vector3>> a1 = ComputePoint(c1, c2, nbSubdiv);
+        List<List<Vector3>> b1 = ComputePoint(c3, c4, nbSubdiv);
+
+        List<Edge> border = new List<Edge>() {
+            new Edge(c1.edges[0].start, c1.edges[c1.edges.Count - 1].end),
+            new Edge(c2.edges[0].start, c2.edges[c2.edges.Count - 1].end),
+        };
+
+        List<List<Vector3>> c1 = GenerateBox(border, nbSubdiv);
+
+        List<Curve> curves = new List<Curve>();
+        for (int i = 0; i < a1.Count; i++) {
+            curves[i] = new Curve();
+
+            for (int j = 0; j < b1.Count; j++) {
+
+                Vector3 p1 = a1[i][j] + b1[j][i] - c1[i][j];
+                Vector3 p2 = a1[i][j + 1] + b1[j + 1][i] - c1[i][j + 1];
+
+                curves[i].Add(p1, p2);
+            }
+        }
+
+        for (int j = 0; j < b1.Count; j++) {
+            curves[i] = new Curve();
+            
+            for (int i = 0; i < a1.Count; i++) {
+
+                Vector3 p1 = a1[i][j] + b1[j][i] - c1[i][j];
+                Vector3 p2 = a1[i + 1][j] + b1[j][i + 1] - c1[i + 1][j];
+
+                curves[j + a1.Count].Add(p1, p2);
+            }
+        }
+
+        return curves;
+    }
 }

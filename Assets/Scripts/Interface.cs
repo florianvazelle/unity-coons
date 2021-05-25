@@ -12,7 +12,7 @@ public class Interface : MonoBehaviour
 
     public GameObject pointPrefab;
 
-    private Rect windowRect = new Rect(0, 0, 250, 500);     // Rect window for ImGUI
+    private Rect windowRect = new Rect(0, 0, 300, 200);     // Rect window for ImGUI
     private List<Curve> curves;
     private Vector3? lastPoint;
     private int curveIndex;
@@ -64,7 +64,20 @@ public class Interface : MonoBehaviour
             curve.Render();
         }
 
-
+         // Display real-time mouse movement
+        if (curves.Count > 0) {
+            Curve currentCurve = curves[curveIndex];
+            
+            Vector3 worldPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10)); // TODO : faire l'axe Z paramètrable
+            if (currentCurve.edges.Count > 0) {
+                Edge lastEdge = currentCurve.edges[currentCurve.edges.Count - 1];
+                Edge tmp = new Edge(lastEdge.end, worldPosition);
+                tmp.Render();
+            } else if (lastPoint != null) {
+                Edge tmp = new Edge((Vector3)lastPoint, worldPosition);
+                tmp.Render();
+            }
+        }
     }
 
     public void ResetData() {

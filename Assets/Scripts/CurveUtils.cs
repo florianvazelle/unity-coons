@@ -31,6 +31,25 @@ public static class CurveUtils
         return edges;
     }
 
+    static public List<Vector3> SplitEdge(Edge e, int nbSplit) {
+
+        List<Vector3> subPoints = new List<Vector3>();
+
+        for (int i =0; i < nbSplit; i++)
+        {
+            Vector3 direction = (e.end - e.start).normalized;
+            float distance = Vector3.Distance(e.start, e.end);
+
+            Vector3 Point = e.start + (i * 0.25f * distance) * direction;
+            
+            subPoints.Add(Point);
+
+        }
+
+        return subPoints;
+
+    }
+
     static List<List<Vector3>> ComputePoint(Curve c1, Curve c2, int nbSubdiv) {
         return SplitEdges(ConstructFace(c1, c2), nbSubdiv);
     }

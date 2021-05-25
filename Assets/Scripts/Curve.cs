@@ -65,6 +65,10 @@ public class Curve
             cloneEdges = new List<Edge>(subEdges);
         }
 
+        if (cloneEdges.Count > 0) {
+            cloneEdges[0] = edges[0];
+            cloneEdges[cloneEdges.Count - 1] = edges[edges.Count - 1];
+        }
         CurveOut.edges = new List<Edge>(cloneEdges);
 
         return CurveOut;

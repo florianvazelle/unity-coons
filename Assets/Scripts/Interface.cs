@@ -56,7 +56,7 @@ public class Interface : MonoBehaviour
             // Instantiate(pointPrefab, worldPosition, Quaternion.identity);
         }
         
-        curves[curveIndex + MAX_CURVES] = curves[0].SimpleCornerCutting(0.25f, 0.25f, subDivision);
+        curves[curveIndex + MAX_CURVES] = curves[curveIndex].SimpleCornerCutting(0.25f, 0.25f, subDivision);
 
         if (Input.GetAxis("Mouse ScrollWheel") != 0) {
             subDivision += (Input.GetAxis("Mouse ScrollWheel") > 0 ? 1 : -1);

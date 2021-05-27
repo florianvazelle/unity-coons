@@ -50,14 +50,15 @@ public class Curve
 
                 if (lastPCorner != null) {
                     Edge edge1 = new Edge((Vector3)lastPCorner, PCorner);
-                    edge1.lineMat.color = new Color(1, 0, 0);
+                    edge1.SetColor(Color.red);
                     subEdges.Add(edge1);
                 }
 
                 //Ajouter les point Corner dans une nouvelle liste
                 Edge edge2 = new Edge(PCorner, PCorner2);
-                edge2.lineMat.color = new Color(1, 0, 0);
+                edge2.SetColor(Color.red);
                 subEdges.Add(edge2);
+                
                 lastPCorner = PCorner2;
 
             }

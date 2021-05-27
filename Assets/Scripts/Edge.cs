@@ -12,6 +12,10 @@ public class Edge {
         lineMat.color = new Color(0, 0, 0);
     }
 
+    public void SetColor(Color color) {
+        lineMat.color = color;
+    }
+
     public bool Contains(Vector3 point) {
         return (start == point || end == point);
     }

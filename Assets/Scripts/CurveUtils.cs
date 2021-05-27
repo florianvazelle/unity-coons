@@ -90,7 +90,7 @@ public static class CurveUtils
         for (int i = 0; i < a.Count; i++) {
             curves.Add(new Curve());
 
-            for (int j = 0; j < b.Count; j++) {
+            for (int j = 0; j < b.Count - 1; j++) {
 
                 Vector3 p1 = a[i][j] + b[j][i] - c[i][j];
                 Vector3 p2 = a[i][j + 1] + b[j + 1][i] - c[i][j + 1];
@@ -102,12 +102,12 @@ public static class CurveUtils
         for (int j = 0; j < b.Count; j++) {
             curves.Add(new Curve());
             
-            for (int i = 0; i < a.Count; i++) {
+            for (int i = 0; i < a.Count - 1; i++) {
 
                 Vector3 p1 = a[i][j] + b[j][i] - c[i][j];
                 Vector3 p2 = a[i + 1][j] + b[j][i + 1] - c[i + 1][j];
 
-                curves[j + a.Count].Add(p1, p2);
+                curves[curves.Count - 1].Add(p1, p2);
             }
         }
 

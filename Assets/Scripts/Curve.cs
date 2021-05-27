@@ -15,10 +15,11 @@ public class Curve
         edges.Add(new Edge(pointA, pointB));
     }
 
-    public void Render()
+    public void Render(Color color)
     {
         foreach (var edge in edges)
         {
+            edge.SetColor(color);
             edge.Render();
         }
     }
@@ -49,16 +50,12 @@ public class Curve
                 Vector3 PCorner2 = CurveUtils.ProjectionPoint(cloneEdges[i], u + (1 - (u + v)));
 
                 if (lastPCorner != null) {
-                    Edge edge1 = new Edge((Vector3)lastPCorner, PCorner);
-                    edge1.SetColor(Color.red);
-                    subEdges.Add(edge1);
+                    subEdges.Add(new Edge((Vector3)lastPCorner, PCorner));
                 }
 
                 //Ajouter les point Corner dans une nouvelle liste
-                Edge edge2 = new Edge(PCorner, PCorner2);
-                edge2.SetColor(Color.red);
-                subEdges.Add(edge2);
-                
+                subEdges.Add(new Edge(PCorner, PCorner2));
+
                 lastPCorner = PCorner2;
 
             }
@@ -67,8 +64,8 @@ public class Curve
         }
 
         if (cloneEdges.Count > 0) {
-            cloneEdges[0] = edges[0];
-            cloneEdges[cloneEdges.Count - 1] = edges[edges.Count - 1];
+            cloneEdges[0].start = edges[0].start;
+            cloneEdges[cloneEdges.Count - 1].end = edges[edges.Count - 1].end;
         }
         CurveOut.edges = new List<Edge>(cloneEdges);
 

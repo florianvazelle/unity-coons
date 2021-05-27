@@ -19,6 +19,7 @@ public class Interface : MonoBehaviour {
     private int curveConstructorIndex1;
     private int curveConstructorIndex2;
     private Camera cam;
+    private bool showCurves, showSubCurves;
 
     void Start() {
         curves = new List<Curve>();   
@@ -26,6 +27,7 @@ public class Interface : MonoBehaviour {
         curveIndex = 0;
         cam = Camera.main;
         subDivision = 0;
+        showCurves = showSubCurves = true;
 
         // Pool curve
         for (int i = 0; i < MAX_CURVES * 2; i++) {
@@ -73,6 +75,9 @@ public class Interface : MonoBehaviour {
     }
 
     public void DoGUI() {
+        showCurves = RGUI.Field(showCurves, "Show curves");
+        showSubCurves = RGUI.Field(showSubCurves, "Show subdivided curves");
+
         int curveIndexOld = RGUI.Slider(curveIndex, 0, MAX_CURVES, $"Current curve: {curveIndex}");
         if (curveIndexOld != curveIndex) {
             lastPoint = null;
@@ -105,13 +110,24 @@ public class Interface : MonoBehaviour {
             curveIndex = 4;
         }
 
-        if (GUILayout.Button("Coons")) CurveUtils.Coons(curves[0 + MAX_CURVES], curves[2 + MAX_CURVES], curves[1 + MAX_CURVES], curves[3 + MAX_CURVES]);
+        if (GUILayout.Button("Coons")) {
+            List<Vector3> points = CurveUtils.Coons(curves[0 + MAX_CURVES], curves[2 + MAX_CURVES], curves[1 + MAX_CURVES], curves[3 + MAX_CURVES]);
+            foreach(var p in points) {
+                Instantiate(pointPrefab, p, Quaternion.identity);
+            }
+        }   
     }
 
     void OnPostRender() {
-        foreach (var curve in curves) {
-            curve.Render();
-        }
+        if (showCurves)
+            for (int i = 0; i < MAX_CURVES; i++) {
+                curves[i].Render(Color.black);
+            }
+
+        if (showSubCurves)
+            for (int i = MAX_CURVES - 1; i < MAX_CURVES * 2; i++) {
+                curves[i].Render(Color.red);
+            }
 
          // Display real-time mouse movement
         if (curves.Count > 0) {

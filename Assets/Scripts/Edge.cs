@@ -9,7 +9,7 @@ public class Edge {
         end = e;
 
         lineMat = new Material(Shader.Find("Unlit/Color"));
-        lineMat.color = new Color(0, 0, 0);
+        lineMat.color = Color.black;
     }
 
     public void SetColor(Color color) {

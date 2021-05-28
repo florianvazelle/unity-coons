@@ -24,6 +24,10 @@ public class Curve
         }
     }
 
+    public Vector3 At(int idx) {
+        return ((idx == edges.Count) ? edges[idx - 1].end : edges[idx].start);
+    }
+
     public Curve SimpleCornerCutting(float u, float v, int nbSubDiv)
     {
         Debug.Assert(u >= 0);
@@ -57,7 +61,6 @@ public class Curve
                 subEdges.Add(new Edge(PCorner, PCorner2));
 
                 lastPCorner = PCorner2;
-
             }
 
             cloneEdges = new List<Edge>(subEdges);

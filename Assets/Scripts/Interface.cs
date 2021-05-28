@@ -13,6 +13,7 @@ public class Interface : MonoBehaviour {
     public GameObject pointPrefab;
 
     private List<Curve> curves;
+    private List<Curve> coons;
     private Vector3? lastPoint;
     private int curveIndex;
     private int subDivision;
@@ -23,6 +24,7 @@ public class Interface : MonoBehaviour {
 
     void Start() {
         curves = new List<Curve>();   
+        coons = new List<Curve>();   
         lastPoint = null;     
         curveIndex = 0;
         cam = Camera.main;
@@ -80,45 +82,96 @@ public class Interface : MonoBehaviour {
 
         int curveIndexOld = RGUI.Slider(curveIndex, 0, MAX_CURVES, $"Current curve: {curveIndex}");
         if (curveIndexOld != curveIndex) {
-            lastPoint = null;
+            // lastPoint = null;
             curveIndex = curveIndexOld;
         }
        
         GUILayout.Label($"Subdivision: {subDivision}");
 
         if (GUILayout.Button("Generate 4 Chaikin curves")) {
+            InterfaceUtils.ResetPoint();
+            coons.Clear();
+
             List<Vector3> points = new List<Vector3>() {
-                new Vector3(-3.1f, 1.5f, 0.0f),
+                new Vector3(-3.1f, 1.5f, 0.0f), // C0_0 et D0_0
                 new Vector3(-0.1f, 2.6f, 0.0f),
-                new Vector3(2.7f, 1.2f, 0.0f),
+                new Vector3(2.7f, 1.2f, 0.0f), // C0_1 et D1_0
                 new Vector3(4.8f, -0.4f, 0.0f),
-                new Vector3(1.0f, -1.6f, 0.0f),
+                new Vector3(1.0f, -1.6f, 0.0f), // C1_1 et D1_1
                 new Vector3(-2.4f, -2.9f, 0.0f),
-                new Vector3(-3.2f, -1.5f, 0.0f),
-                new Vector3(-1.5f, -0.3f, 0.0f),
+                new Vector3(-3.2f, -1.5f, 0.0f), // C1_0 et D0_1
+                new Vector3(-4.5f, -0.3f, 0.0f), 
             };
 
+            // c0
             curves[0].edges = new List<Edge>() { new Edge(points[0], points[1]), new Edge(points[1], points[2]) };
-            curves[1].edges = new List<Edge>() { new Edge(points[2], points[3]), new Edge(points[3], points[4]) };
-            curves[2].edges = new List<Edge>() { new Edge(points[4], points[5]), new Edge(points[5], points[6]) };
-            curves[3].edges = new List<Edge>() { new Edge(points[6], points[7]), new Edge(points[7], points[0]) };
+            
+            // d0
+            curves[1].edges = new List<Edge>() { new Edge(points[0], points[7]), new Edge(points[7], points[6]) };
+            
+            // c1
+            curves[2].edges = new List<Edge>() { new Edge(points[6], points[5]), new Edge(points[5], points[4]) };
+            
+            // d1
+            curves[3].edges = new List<Edge>() { new Edge(points[2], points[3]), new Edge(points[3], points[4]) };
 
             for (int i = 0; i < 4; i++) {
-                curves[i + MAX_CURVES] = curves[i].SimpleCornerCutting(0.25f, 0.25f, 6);
+                curves[i + MAX_CURVES] = curves[i].SimpleCornerCutting(0.25f, 0.25f, subDivision);
+            }
+
+            curveIndex = 4;
+        }
+
+        if (GUILayout.Button("Generate 4 3D Chaikin curves")) {
+            InterfaceUtils.ResetPoint();
+            coons.Clear();
+
+            List<Vector3> points = new List<Vector3>() {
+                new Vector3(0.0f, 0.0f, 0.0f), // C0_0 et D0_0
+                new Vector3(1.0f, 0.0f, 0.0f),
+                new Vector3(2.0f, 0.0f, 0.0f), // C0_1 et D1_0
+                new Vector3(2.0f, 0.5f, 0.5f),
+                new Vector3(2.0f, 1.0f, 2.0f), // C1_1 et D1_1
+                new Vector3(1.0f, 1.0f, 2.0f),
+                new Vector3(0.0f, 1.0f, 2.0f), // C1_0 et D0_1
+                new Vector3(0.0f, 0.5f, 0.5f), 
+            };
+
+            // c0
+            curves[0].edges = new List<Edge>() { new Edge(points[0], points[1]), new Edge(points[1], points[2]) };
+            
+            // d0
+            curves[1].edges = new List<Edge>() { new Edge(points[0], points[7]), new Edge(points[7], points[6]) };
+            
+            // c1
+            curves[2].edges = new List<Edge>() { new Edge(points[6], points[5]), new Edge(points[5], points[4]) };
+            
+            // d1
+            curves[3].edges = new List<Edge>() { new Edge(points[2], points[3]), new Edge(points[3], points[4]) };
+
+            for (int i = 0; i < 4; i++) {
+                curves[i + MAX_CURVES] = curves[i].SimpleCornerCutting(0.25f, 0.25f, subDivision);
             }
 
             curveIndex = 4;
         }
 
         if (GUILayout.Button("Coons")) {
-            List<Vector3> points = CurveUtils.Coons(curves[0 + MAX_CURVES], curves[2 + MAX_CURVES], curves[1 + MAX_CURVES], curves[3 + MAX_CURVES]);
-            foreach(var p in points) {
-                Instantiate(pointPrefab, p, Quaternion.identity);
-            }
+            InterfaceUtils.ResetPoint();
+            coons.Clear();
+
+            coons = CurveUtils.Coons(curves[0 + MAX_CURVES], curves[2 + MAX_CURVES], curves[1 + MAX_CURVES], curves[3 + MAX_CURVES]);
+            // foreach(var p in points) {
+            //     Instantiate(pointPrefab, p, Quaternion.identity);
+            // }
         }   
     }
 
     void OnPostRender() {
+        for (int i = 0; i < coons.Count; i++) {
+            coons[i].Render(Color.blue);
+        }
+
         if (showCurves)
             for (int i = 0; i < MAX_CURVES; i++) {
                 curves[i].Render(Color.black);

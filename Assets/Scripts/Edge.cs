@@ -30,7 +30,7 @@ public class Edge {
         lineMat.SetPass(0);
         GL.Color(new Color(lineMat.color.r, lineMat.color.g, lineMat.color.b, lineMat.color.a));
         GL.Vertex3(start.x, start.y, start.z);
-        GL.Vertex3(end.x, end.y, start.z);
+        GL.Vertex3(end.x, end.y, end.z);
         GL.End();
     }
 }

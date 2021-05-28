@@ -11,112 +11,99 @@ public static class CurveUtils
 
         return edge.start + (u * distance) * direction;
     }
-
-    static public List<Edge> ConstructFace(Curve c1, Curve c2) { // Curve c1, Curve c2
-        Debug.Assert(c1.edges.Count == c2.edges.Count);
-
-        List<Edge> edges = new List<Edge>();
-        for (int i = 0; i < c1.edges.Count; i++){
-            edges.Add(new Edge(c1.edges[i].start, c2.edges[i].start));
-
-            if(i == c1.edges.Count - 1){
-                edges.Add(new Edge(c1.edges[i].end, c2.edges[i].end));
-            }
-        }
-
-        Debug.Assert(edges.Count == c1.edges.Count + 1);
-
-        return edges;
-    }
-
-    static public List<List<Vector3>> SplitEdges(List<Edge> edges, int nbSplit) {
-        float unit = (1.0f / (float)nbSplit);
-        
-        List<List<Vector3>> subPoints = new List<List<Vector3>>();
-
-        for (int j = 0; j < edges.Count; j++) {
-            subPoints.Add(new List<Vector3>());
-
-            for (int i = 0; i <= nbSplit; i++) {
-                Vector3 Point = ProjectionPoint(edges[j], i * unit);
-                subPoints[j].Add(Point);
-            }
-        }
-
-        return subPoints;
-    }
-
-    static List<List<Vector3>> ComputePoint(Curve c1, Curve c2, int nbSubdiv) {
-        List<List<Vector3>> points = SplitEdges(ConstructFace(c1, c2), nbSubdiv);
-
-        foreach(var p in points) {
-            Debug.Assert(p.Count == nbSubdiv + 1);
-        }
-
-        return points;
-    }
-
-    static List<List<Vector3>> GenerateBox(List<Edge> border, int initSubdiv, int nbSubdiv) {
-        // On détermine les points de nos courbes droites
-        List<List<Vector3>> lines = SplitEdges(border, initSubdiv);
-
-        foreach(var l in lines) {
-            Debug.Assert(l.Count == initSubdiv + 1);
-        }
-
-        // On initialise nos deux courbes droites
-        Curve c1 = new Curve();
-        Curve c2 = new Curve();
-
-        // On calcule l'ensemble des edges qui raccordent tout les points
-        c1.edges = new List<Edge>();
-        for(int i = 0; i < lines[0].Count - 1; i++) {
-            c1.edges.Add(new Edge(lines[0][i], lines[0][i + 1]));
-        }
-        Debug.Assert(c1.edges.Count == initSubdiv);
-
-        c2.edges = new List<Edge>();
-        for(int i = 0; i < lines[1].Count - 1; i++) {
-            c2.edges.Add(new Edge(lines[1][i], lines[1][i + 1]));
-        }
-        Debug.Assert(c2.edges.Count == initSubdiv);
-
-        // Ensuite, on calcule les points, des edges, qui relient les deux courbes
-        return ComputePoint(c1, c2, nbSubdiv);
-    }
     
-    static public List<Vector3> Coons(Curve c1, Curve c2, Curve c3, Curve c4) {
-        int nbSubdiv = c1.edges.Count + 1; // Correspond au nombre de points de la courbe
-
-        // On peux imaginer List<List<Vector3>> comme une matrice de Vector3 ou (cols == row)
-
-        List<List<Vector3>> a = ComputePoint(c1, c2, nbSubdiv);
-        Debug.Log($"a.Count={a.Count}");
-        Debug.Assert(nbSubdiv == a.Count);
-        
-        List<List<Vector3>> b = ComputePoint(c3, c4, nbSubdiv);
-        Debug.Log($"b.Count={b.Count}");
-        Debug.Assert(nbSubdiv == b.Count);
-
-        // On crée deux edges qui représente notre courbe c1 et c2, comme si elles étaient droite 
-        List<Edge> border = new List<Edge>() {
-            new Edge(c1.edges[0].start, c1.edges[c1.edges.Count - 1].end),
-            new Edge(c2.edges[0].start, c2.edges[c2.edges.Count - 1].end),
-        };
-
-        List<List<Vector3>> c = GenerateBox(border, nbSubdiv - 1, nbSubdiv);
-        Debug.Log($"c.Count={c.Count}");
-        Debug.Assert(nbSubdiv == c.Count);
-
-        // On calcule les points du quadriallage en enlevant l'erreur
+    static public List<Curve> Coons(Curve c0, Curve c1, Curve d0, Curve d1) {
         List<Vector3> points = new List<Vector3>();
-        for (int i = 0; i < nbSubdiv; i++) {
-            for (int j = 0; j < nbSubdiv; j++) {
-                Vector3 p = a[i][j] + b[j][i] - c[i][j];
-                points.Add(p);
+
+        // Points du patch
+
+        Vector3 C0_0 = c0.edges[0].start;
+        Vector3 C0_1 = c0.edges[c0.edges.Count - 1].end;
+        Vector3 C1_0 = c1.edges[0].start;
+        Vector3 C1_1 = c1.edges[c1.edges.Count - 1].end;
+
+        Vector3 D0_0 = d0.edges[0].start;
+        Vector3 D0_1 = d0.edges[d0.edges.Count - 1].end;
+        Vector3 D1_0 = d1.edges[0].start;
+        Vector3 D1_1 = d1.edges[d1.edges.Count - 1].end;
+
+        Debug.Log($"C0_0==D0_0 - {C0_0} == {D0_0}");
+        Debug.Log($"C0_1==D1_0 - {C0_1} == {D1_0}");
+        Debug.Log($"C1_0==D0_1 - {C1_0} == {D0_1}");
+        Debug.Log($"C1_1==D1_1 - {C1_1} == {D1_1}");
+
+        Debug.Assert(C0_0 == D0_0);
+        Debug.Assert(C0_1 == D1_0);
+        Debug.Assert(C1_0 == D0_1);
+        Debug.Assert(C1_1 == D1_1);
+
+        // Directions
+
+        Vector3 dir_C0 = C0_1 - C0_0;
+        Vector3 dir_C1 = C1_1 - C1_0;
+
+        Vector3 dir_D0 = D0_1 - D0_0;
+        Vector3 dir_D1 = D1_1 - D1_0;
+
+        // Nombre de subdivision
+
+        int u = c0.edges.Count + 1;
+        int v = d0.edges.Count + 1;
+
+        // On calcule
+
+        List<Curve> curves = new List<Curve>();
+        for(int j = 0; j < v; j++)
+        {
+            Vector3? lastPoint = null;
+            curves.Add(new Curve());
+
+            for (int i = 0; i < u; i++)
+            {
+                float s = ((float)i / u);
+                float t = ((float)j / v);
+
+                Vector3 rc = new Vector3();
+                Vector3 rd = new Vector3();
+
+                bool foundU = false, foundV = false;
+                
+                if (i <= c0.edges.Count) {
+                    foundU = true;
+                    rc = (1 - t) * c0.At(i) + t * c1.At(i);
+                }
+                
+                if (j <= d0.edges.Count) {
+                    foundV = true;
+                    rd = (1 - s) * d0.At(j) + s * d1.At(j);
+                }
+
+                if (!foundU || !foundV) {
+                    break;
+                }
+                
+                Vector3 rcd = C0_0 * (1 - s) * (1 - t) + C0_1 * s * (1 - t) + C1_0 * (1 - s) * t + C1_1 * s * t;
+
+                Vector3 point = rc + rd - rcd;
+
+                if (lastPoint != null)
+                    curves[curves.Count - 1].Add((Vector3)lastPoint, point);
+
+                lastPoint = point;
             }
         }
 
-        return points;
+        // Finalisation du quadrillage
+
+        int initLength = curves.Count;
+        for (int i = 0; i < initLength - 1; i++) {
+            curves.Add(new Curve());
+
+            for(int j = 0; j < curves[i].edges.Count; j++) {
+                curves[curves.Count - 1].Add(curves[i].At(j), curves[i + 1].At(j));
+            }
+        }
+
+        return curves;
     }
 }

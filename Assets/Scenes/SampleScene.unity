@@ -326,3 +326,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pointPrefab: {fileID: 793653936357744264, guid: 6682bff8bc480b44b8e4123cdc9eae12, type: 3}
+  cubePrefab: {fileID: 8678417803881098394, guid: 3f6a0362039b8ab41ba0843465de2c01, type: 3}

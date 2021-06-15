@@ -8,6 +8,8 @@ using static InterfaceUtils;
 
 public class Interface : MonoBehaviour {
 
+    private const String MODEL_NAME = "Building"; 
+
     private const int MAX_CURVES = 5;  
 
     public GameObject pointPrefab;
@@ -168,10 +170,11 @@ public class Interface : MonoBehaviour {
 
         if (GUILayout.Button("Spawn Cube"))
         {
-            GameObject thisBuilding = GameObject.Find("Cube(Clone)");
+            GameObject thisBuilding = GameObject.Find(MODEL_NAME);
             if (thisBuilding == null)
             {
-                Instantiate(cubePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+                GameObject go = Instantiate(cubePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+                go.name = MODEL_NAME;
             }
         }
 
@@ -273,10 +276,10 @@ public class Interface : MonoBehaviour {
     // https://forum.unity.com/threads/building-mesh-from-polygon.484305/
     static public void GenerateMesh(List<Vector3> vertices, List<int> indices) {
 
-        GameObject thisBuilding = GameObject.Find("Cube(Clone)");
+        GameObject thisBuilding = GameObject.Find(MODEL_NAME);
         if (thisBuilding == null) {
             // Create a building game object
-            thisBuilding = new GameObject ("Cube(Clone)");
+            thisBuilding = new GameObject (MODEL_NAME);
         }
 
         var center = findCenter(vertices);

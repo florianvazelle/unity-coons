@@ -82,12 +82,13 @@ public static class Kobbelt {
         {
             // On trouve les triangles qui partage le coté courant
             var common_edge_triangles_indices = copy_triangles
-                .Where(t => t.hasEdge(edge))
+                .Select((t, i) => new { Value = t, Index = i })
+                .Where(t => t.Value.hasEdge(edge))
                 .Select(t => t.Index)
                 .ToList();
 
             // On ignorer s'il n'y a pas au minimum deux triangles
-            if (common_edge_triangles.Count < 2) continue;
+            if (common_edge_triangles_indices.Count < 2) continue;
 
             var triangle_ABC = triangles[common_edge_triangles_indices[0]];
             var triangle_ABD = triangles[common_edge_triangles_indices[0]];

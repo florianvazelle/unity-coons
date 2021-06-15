@@ -22,6 +22,7 @@ public class Interface : MonoBehaviour {
     private int curveConstructorIndex2;
     private Camera cam;
     private bool showCurves, showSubCurves;
+    private int level, levelOld;
 
     void Start() {
         curves = new List<Curve>();   
@@ -31,6 +32,7 @@ public class Interface : MonoBehaviour {
         cam = Camera.main;
         subDivision = 0;
         showCurves = showSubCurves = true;
+        level = levelOld = 0;
 
         // Pool curve
         for (int i = 0; i < MAX_CURVES * 2; i++) {
@@ -173,13 +175,15 @@ public class Interface : MonoBehaviour {
             }
         }
 
-        if (GUILayout.Button("Kobbelt"))
+        level = RGUI.Slider(level, 0, 3, "Kobbelt");
+        if (level != levelOld)
         {
             MeshFilter viewedModelFilter = (MeshFilter)cubePrefab.GetComponent("MeshFilter");
             Mesh mesh = viewedModelFilter.sharedMesh;
 
             List<Triangle> triangles = new List<Triangle>();
-            for(int i = 0; i < mesh.triangles.Length; i+=3) {
+            for (int i = 0; i < mesh.triangles.Length; i += 3)
+            {
                 int iA = mesh.triangles[i];
                 int iB = mesh.triangles[i + 1];
                 int iC = mesh.triangles[i + 2];
@@ -191,9 +195,13 @@ public class Interface : MonoBehaviour {
                 triangles.Add(new Triangle(vA, vB, vC));
             }
 
-            Kobbelt.Subdivision(ref triangles);
+            for (int i = 0; i < subDivision; i++) {
+                Kobbelt.Subdivision(ref triangles, level);
+            }
 
             GenerateMeshIndirect(in triangles);
+
+            levelOld = level;
         }
     }
 

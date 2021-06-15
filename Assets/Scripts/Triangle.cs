@@ -47,17 +47,17 @@ public struct Triangle
 
 
     // Retourne le point du triangle qui n'appartient pas a l'arête
-    public Vector3 GetOtherPoint(Edge edge)
+    public int GetOtherPoint(Edge edge)
     {
         for (var i = 0; i < vertices.Count; i++)
         {
             if (!edge.Contains(vertices[i]))
             {
-                return vertices[i];
+                return i;
             }
         }
         // Techniquement cela ne passe jamais ici (edge = 2 points et triangle = 3 points)
-        return Vector3.zero;
+        return -1;
     }
 
     public Vector3 Center()

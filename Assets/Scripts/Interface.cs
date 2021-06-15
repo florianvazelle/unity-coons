@@ -310,7 +310,7 @@ public class Interface : MonoBehaviour {
         if (rend == null) {
             rend = thisBuilding.AddComponent<MeshRenderer>();
         }
-        // rend.material = new Material(Shader.Find("Standard"));
+        rend.material = new Material(Shader.Find("VR/SpatialMapping/Wireframe"));
     }
 
     public static Vector3 findCenter(List<Triangle> triangles)

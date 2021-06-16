@@ -14,16 +14,21 @@ namespace Subdivision
 
         public GameObject cube, cubeHole, camel, cyl1, cyl2, icos, tet;
 
-        private GameObject? actualPrefab;
+        private GameObject? actualPrefab, actualGo;
         private int subDivision;
         private int level, levelOld;
         private Dictionary<string, GameObject> prefabs;
+
+        // Catmull-Clark
+        private MeshConverter converter;
+        private Subdivision.Core.CatmullClarkSubdivider CCSubdivider;
+        private Subdivision.Core.Shape shape;
 
         void Start()
         {
             subDivision = 1;
             level = levelOld = 0;
-            actualPrefab = null;
+            actualPrefab = actualGo = null;
 
             prefabs = new Dictionary<string, GameObject>(){
                 {"Cube", cube},
@@ -34,6 +39,10 @@ namespace Subdivision
                 {"Icos", icos},
                 {"Tet", tet},
             };
+
+            // Catmull-Clark
+            converter = new MeshConverter();
+            CCSubdivider = new Subdivision.Core.CatmullClarkSubdivider();  // Instantier CatmullClark, mais pas encore executer
         }
 
         private void OnGUI()
@@ -59,11 +68,28 @@ namespace Subdivision
                             Destroy(prefab);
                         }
 
-                        GameObject go = Instantiate(kvp.Value, new Vector3(0, 0, 0), Quaternion.identity);
+                        GameObject go = Instantiate(kvp.Value, new  Vector3(0, 0, 0), Quaternion.identity);
                         go.name = MODEL_NAME;
 
                         actualPrefab = kvp.Value;
+
+                        // Catmull-Clark
+                        actualGo = go;
+                        MeshFilter viewedModelFilter = (MeshFilter)actualGo.GetComponent("MeshFilter");
+                        shape = converter.OnConvert(viewedModelFilter.mesh); // Convertir le mesh passer en parametre en Shape
                     }
+            }
+
+            // Catmull-Clark
+            //A chaque fois qu'on click sur le boutton: il prend le shape actuelle est le resubdivise
+            if (GUILayout.Button("Catmull-Clark")) {
+                if (actualGo != null)
+                {
+                    shape = CCSubdivider.Subdivide(shape); // Cette fois ci on recupere le Shape obtenir et le subdivise
+
+                    MeshFilter viewedModelFilter = (MeshFilter)actualGo.GetComponent("MeshFilter");
+                    viewedModelFilter.mesh = converter.ConvertToMesh(shape); //A la fin on recupere la nouvelle Shape obtenu apres la subdivision. Pour pouvoir réitérer si on le souhaite.
+                }
             }
 
             level = RGUI.Slider(level, 0, 3, "Kobbelt");

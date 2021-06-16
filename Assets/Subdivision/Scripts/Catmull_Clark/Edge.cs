@@ -56,9 +56,10 @@ namespace Subdivision.Core
         {
             if (Faces.Contains(face))
             {
-                throw new InvalidOperationException("Edge allready contains face!");
+                //throw new InvalidOperationException("Edge allready contains face!");
+            } else {
+                Faces.Add(face);
             }
-            Faces.Add(face);
         }
 
         public Point PointInBoth(Edge other)

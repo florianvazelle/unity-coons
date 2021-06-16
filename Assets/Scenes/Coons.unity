@@ -322,8 +322,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 963194225}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e511d49e55e01654ab490969a5e06fad, type: 3}
+  m_Script: {fileID: 11500000, guid: 84fe21e8acdb6f04fb3facd16c162f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   pointPrefab: {fileID: 793653936357744264, guid: 6682bff8bc480b44b8e4123cdc9eae12, type: 3}
-  cubePrefab: {fileID: 2330951285448912503, guid: 0fa5876afc5c9d04ea7db7bd853feb28, type: 3}
+  cubePrefab: {fileID: 0}

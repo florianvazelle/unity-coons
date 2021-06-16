@@ -13,12 +13,10 @@ public class SimpleOrthoCameraController : MonoBehaviour {
     }
 
     void Update () {
-        if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0) {
-            transform.position += moveSpeed * new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0);
+        if (Input.GetAxis("Mouse ScrollWheel") != 0) {
+            _camera.orthographicSize += scrollSpeed * -Input.GetAxis("Mouse ScrollWheel");
         }
 
-        // if (Input.GetAxis("Mouse ScrollWheel") != 0) {
-        //     _camera.orthographicSize += scrollSpeed * -Input.GetAxis("Mouse ScrollWheel");
-        // }
+        transform.LookAt(new Vector3(0, 0, 0));
     }
 }

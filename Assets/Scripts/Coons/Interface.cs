@@ -8,12 +8,9 @@ using static InterfaceUtils;
 
 public class Interface : MonoBehaviour {
 
-    private const String MODEL_NAME = "Building"; 
-
     private const int MAX_CURVES = 5;  
 
     public GameObject pointPrefab;
-    public GameObject cubePrefab;
 
     private List<Curve> curves;
     private List<Curve> coons;
@@ -24,7 +21,6 @@ public class Interface : MonoBehaviour {
     private int curveConstructorIndex2;
     private Camera cam;
     private bool showCurves, showSubCurves;
-    private int level, levelOld;
 
     void Start() {
         curves = new List<Curve>();   
@@ -34,7 +30,6 @@ public class Interface : MonoBehaviour {
         cam = Camera.main;
         subDivision = 0;
         showCurves = showSubCurves = true;
-        level = levelOld = 0;
 
         // Pool curve
         for (int i = 0; i < MAX_CURVES * 2; i++) {
@@ -167,45 +162,6 @@ public class Interface : MonoBehaviour {
 
             coons = CurveUtils.Coons(curves[0 + MAX_CURVES], curves[2 + MAX_CURVES], curves[1 + MAX_CURVES], curves[3 + MAX_CURVES]);
         }
-
-        if (GUILayout.Button("Spawn Cube"))
-        {
-            GameObject thisBuilding = GameObject.Find(MODEL_NAME);
-            if (thisBuilding == null)
-            {
-                GameObject go = Instantiate(cubePrefab, new Vector3(0, 0, 0), Quaternion.identity);
-                go.name = MODEL_NAME;
-            }
-        }
-
-        level = RGUI.Slider(level, 0, 3, "Kobbelt");
-        if (level != levelOld)
-        {
-            MeshFilter viewedModelFilter = (MeshFilter)cubePrefab.GetComponent("MeshFilter");
-            Mesh mesh = viewedModelFilter.sharedMesh;
-
-            List<Triangle> triangles = new List<Triangle>();
-            for (int i = 0; i < mesh.triangles.Length; i += 3)
-            {
-                int iA = mesh.triangles[i];
-                int iB = mesh.triangles[i + 1];
-                int iC = mesh.triangles[i + 2];
-
-                Vector3 vA = mesh.vertices[iA];
-                Vector3 vB = mesh.vertices[iB];
-                Vector3 vC = mesh.vertices[iC];
-
-                triangles.Add(new Triangle(vA, vB, vC));
-            }
-
-            for (int i = 0; i < subDivision; i++) {
-                Kobbelt.Subdivision(ref triangles, level);
-            }
-
-            GenerateMeshIndirect(in triangles);
-
-            levelOld = level;
-        }
     }
 
     void OnPostRender() {
@@ -241,100 +197,5 @@ public class Interface : MonoBehaviour {
 
     public void ResetData() {
         curves.Clear();
-    }
-
-    // ****** Subdiv ******
-    static public void GenerateMeshIndirect(in List<Triangle> triangles)
-    {
-        var vCenter = findCenter(triangles);
-
-        List<Vector3> points3D = new List<Vector3>();
-        List<int> indices = new List<int>();
-
-        for (int i = 0; i < triangles.Count; i++)
-        {
-            List<int> idx = new List<int>();
-            for (var j = 0; j < 3; j++)
-            {
-                points3D.Add(triangles[i].vertices[j]);
-                indices.Add(i * 3 + j);
-            }
-
-            var surfaceNormal = Vector3.Cross(triangles[i].vertices[1] - triangles[i].vertices[0], triangles[i].vertices[2] - triangles[i].vertices[0]).normalized;
-            Vector3 center = triangles[i].Center();
-            if (Vector3.Dot(surfaceNormal, center - vCenter) < 0)
-            {
-                idx.Reverse();
-            }
-
-            indices.AddRange(idx);
-        }
-
-        GenerateMesh(points3D, indices);
-    }
-
-    // https://forum.unity.com/threads/building-mesh-from-polygon.484305/
-    static public void GenerateMesh(List<Vector3> vertices, List<int> indices) {
-
-        GameObject thisBuilding = GameObject.Find(MODEL_NAME);
-        if (thisBuilding == null) {
-            // Create a building game object
-            thisBuilding = new GameObject (MODEL_NAME);
-        }
-
-        var center = findCenter(vertices);
-        var normals = new List<Vector3>();
-
-        for (int i = 0; i < vertices.Count; i++) {
-            normals.Add((vertices[i] - center).normalized);
-        }
-
-        MeshFilter mf = thisBuilding.GetComponent<MeshFilter>();
-        if (mf == null) {
-            // Create and apply the mesh
-            mf = thisBuilding.AddComponent<MeshFilter>();
-        }
-        
-        Mesh mesh = new Mesh();
-        mf.mesh = mesh;
-
-        mesh.SetVertices(vertices);
-        mesh.SetNormals(normals);
-        mesh.SetTriangles(indices, 0);
-
-        // mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        mesh.Optimize();
-
-        MeshRenderer rend = thisBuilding.GetComponent<MeshRenderer>();
-        if (rend == null) {
-            rend = thisBuilding.AddComponent<MeshRenderer>();
-        }
-        rend.material = new Material(Shader.Find("VR/SpatialMapping/Wireframe"));
-    }
-
-    public static Vector3 findCenter(List<Triangle> triangles)
-    {
-        Vector3 center = Vector3.zero;
-        // Only need to check every other spot since the odd indexed vertices are in the air, but have same XZ as previous
-        for (int i = 0; i < triangles.Count; i++)
-        {
-            for (var j = 0; j < 3; j++)
-            {
-                center += triangles[i].vertices[j];
-            }
-        }
-        return center / (triangles.Count * 3);
-    }
-
-    public static Vector3 findCenter(List<Vector3> verts)
-    {
-        Vector3 center = Vector3.zero;
-        // Only need to check every other spot since the odd indexed vertices are in the air, but have same XZ as previous
-        for (int i = 0; i < verts.Count; i++)
-        {
-            center += verts[i];
-        }
-        return center / verts.Count;
     }
 }

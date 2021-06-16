@@ -7,7 +7,7 @@ using static InterfaceUtils;
 public static class CharlesLoops {
 
     // get all neighbors of one vertex in a list of triangles
-    public static List<Vector3> getNeighbors(Vector3 p, ref List<Triangle> triangles) {
+    public static List<Vector3> getNeighbors(Vector3 p, in List<Triangle> triangles) {
         var neighborhoods = triangles
             .Where(t => t.vertices.Contains(p))
             .Select(t => {
@@ -30,10 +30,8 @@ public static class CharlesLoops {
         Vector3 vRight = current_triangle.vertices[current_triangle.GetOtherPoint(current_edge)];
 
         /* On récupère la face/triangle adjacente */
-        List<Triangle> adjacent_triangles = triangles
-        .Where(t => t.hasEdge(current_edge) && !t.isEqual(current_triangle))
-        .ToList();
-        if (adjacent_triangles.Count == 0) return edgeNeighbors;
+        List<Triangle> adjacent_triangles = triangles.Where(t => t.hasEdge(current_edge) && !t.isEqual(current_triangle)).ToList();
+        Debug.Assert(adjacent_triangles.Count != 0);
         Triangle opposite_triangle = adjacent_triangles[0];
 
         /* On récupère le point opposé (de la face adjacente) */
@@ -44,35 +42,42 @@ public static class CharlesLoops {
         return edgeNeighbors;
     }
 
-    public static List<Triangle> getDisturbedTriangles(ref List<Triangle> triangles) {
-        List<Triangle> diturbedTriangles = triangles;
+    public static List<Triangle> getDisturbedTriangles(in List<Triangle> triangles) {
+        List<Triangle> diturbedTriangles = new List<Triangle>();
 
         // move each vertices of each triangle
-        for(int i = 0; i < diturbedTriangles.Count; i++) {
-            for(int j = 0; j < diturbedTriangles[i].vertices.Count; j++) {
+        for(int i = 0; i < triangles.Count; i++)
+        {
+            List<Vector3> vertices = new List<Vector3>();
+            for (int j = 0; j < 3; j++)
+            {
                 // get neighbors of each vertex of each triangle
-                List<Vector3> neighbors = CharlesLoops.getNeighbors(diturbedTriangles[i].vertices[j], ref triangles);
+                List<Vector3> neighbors = CharlesLoops.getNeighbors(triangles[i].vertices[j], in triangles);
+                
                 // determine n
-                int n = neighbors.Count;
+                float n = neighbors.Count;
+                
                 // determine alpha
                 float alpha;
                 if(n == 3) {
                     alpha = 3f/16f;
                 } else {
-                    alpha = (1/(float)n) * ((5f/8f) - Mathf.Pow( (3f/8f) + (1f/4f) * Mathf.Cos((2f*Mathf.PI)/(float)n) , 2));
+                    alpha = (1f/n) * ((5f/8f) - Mathf.Pow( (3f/8f) + (1f/4f) * Mathf.Cos((2f * Mathf.PI)/n) , 2));
                 }
+                
                 // sum all the neighbors
                 Vector3 sum = new Vector3(0.0f, 0.0f, 0.0f);
                 foreach(var vec in neighbors) {
-                    sum += alpha * vec;
+                    sum += vec;
                 }
+
                 // create new point v'
-                Vector3 disturbedVertex = new Vector3();
-                disturbedVertex = ((1 - (n*alpha)) * triangles[i].vertices[j]) + sum; // + sum
-                
-                diturbedTriangles[i].vertices[j] = disturbedVertex;
+                vertices.Add(((1 - (n * alpha)) * triangles[i].vertices[j]) + alpha * sum); // + sum
             }
+
+            diturbedTriangles.Add(new Triangle(vertices[0], vertices[1], vertices[2]));
         }
+
         return diturbedTriangles;
     }
 

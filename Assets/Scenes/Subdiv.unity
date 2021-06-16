@@ -223,7 +223,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cube: {fileID: 8678417803881098394, guid: 3f6a0362039b8ab41ba0843465de2c01, type: 3}
   cubeHole: {fileID: 2330951285448912503, guid: 0fa5876afc5c9d04ea7db7bd853feb28, type: 3}
-  camel: {fileID: 418458106460765575, guid: 23a0dbba313ed944a8b554f4669168c2, type: 3}
+  camel: {fileID: 4785979704495060859, guid: 2b7adbe5ec62dc743bbce2fdc38eac33, type: 3}
   cyl1: {fileID: 3497889843117291500, guid: 3f578521ada53834d8d62f11d5ab58b1, type: 3}
   cyl2: {fileID: 6705811791869310071, guid: 16511bd12c47afb49b173565f61925f2, type: 3}
   icos: {fileID: 418458106460765575, guid: c59a259e9d8e69949aa59bb42459a044, type: 3}

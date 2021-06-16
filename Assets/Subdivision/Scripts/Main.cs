@@ -35,7 +35,7 @@ public class Main : MonoBehaviour {
     {
         shape = CCSubdivider.Subdivide(shape);        //Cette fois ci on recupere le Shape obtenir et le subdivise
         text.text = shape.AllPoints.Count.ToString(); //Reaffichage des sommet
-        meshFilter.mesh = converter.ConvertToMesh(shape); //A la fin on recupere la nouvelle Shape obtenu apres la subdivision. Pour pouvoir réitérer si on le souhaite.
+        meshFilter.mesh = converter.ConvertToMesh(shape); //A la fin on recupere la nouvelle Shape obtenu apres la subdivision et le reconvertie en mesh pour l'affichage.
 
         MeshRenderer rend = obj.GetComponent<MeshRenderer>();
         if (rend == null)

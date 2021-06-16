@@ -124,6 +124,38 @@ namespace Subdivision
                     levelOld = level;
                 }
             }
+
+            if (GUILayout.Button("Butterfly"))
+            {
+                if (actualPrefab != null)
+                {
+                    MeshFilter viewedModelFilter = (MeshFilter)actualPrefab.GetComponent("MeshFilter");
+                    Mesh mesh = viewedModelFilter.sharedMesh;
+
+                    List<Triangle> triangles = new List<Triangle>();
+                    for (int i = 0; i < mesh.triangles.Length; i += 3)
+                    {
+                        int iA = mesh.triangles[i];
+                        int iB = mesh.triangles[i + 1];
+                        int iC = mesh.triangles[i + 2];
+
+                        Vector3 vA = mesh.vertices[iA];
+                        Vector3 vB = mesh.vertices[iB];
+                        Vector3 vC = mesh.vertices[iC];
+
+                        triangles.Add(new Triangle(vA, vB, vC));
+                    }
+
+                    for (int i = 0; i < subDivision; i++)
+                    {
+                        Butterfly.Subdivision(ref triangles);
+                    }
+
+                    GenerateMeshIndirect(in triangles);
+
+                    levelOld = level;
+                }
+            }
         }
 
         static public void GenerateMeshIndirect(in List<Triangle> triangles)

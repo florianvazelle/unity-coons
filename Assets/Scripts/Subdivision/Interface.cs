@@ -18,6 +18,7 @@ namespace Subdivision
         private int subDivision;
         private int level, levelOld;
         private Dictionary<string, GameObject> prefabs;
+        private bool material;
 
         // Catmull-Clark
         private MeshConverter converter;
@@ -29,6 +30,7 @@ namespace Subdivision
             subDivision = 1;
             level = levelOld = 0;
             actualPrefab = actualGo = null;
+            material = true;
 
             prefabs = new Dictionary<string, GameObject>(){
                 {"Cube", cube},
@@ -55,6 +57,16 @@ namespace Subdivision
 
         public void DoGUI()
         {
+            if (GUILayout.Button("Switch Material"))
+            {
+                if (actualGo != null)
+                {
+                    material = !material; 
+                    MeshRenderer rend = actualGo.GetComponent<MeshRenderer>();
+                    rend.material = new Material(Shader.Find(material ? "VR/SpatialMapping/Wireframe" : "Standard"));
+                }
+            }
+
             subDivision = RGUI.Slider(subDivision, 1, 6, "Subdivision");
 
             using (new GUILayout.HorizontalScope())
@@ -158,7 +170,7 @@ namespace Subdivision
             }
         }
 
-        static public void GenerateMeshIndirect(in List<Triangle> triangles)
+        public void GenerateMeshIndirect(in List<Triangle> triangles)
         {
             var vCenter = findCenter(triangles);
 
@@ -188,7 +200,7 @@ namespace Subdivision
         }
 
         // https://forum.unity.com/threads/building-mesh-from-polygon.484305/
-        static public void GenerateMesh(List<Vector3> vertices, List<int> indices)
+        public void GenerateMesh(List<Vector3> vertices, List<int> indices)
         {
 
             GameObject thisBuilding = GameObject.Find(MODEL_NAME);
@@ -229,7 +241,7 @@ namespace Subdivision
             {
                 rend = thisBuilding.AddComponent<MeshRenderer>();
             }
-            rend.material = new Material(Shader.Find("VR/SpatialMapping/Wireframe"));
+            rend.material = new Material(Shader.Find(material ? "VR/SpatialMapping/Wireframe" : "Standard"));
         }
 
         public static Vector3 findCenter(List<Triangle> triangles)

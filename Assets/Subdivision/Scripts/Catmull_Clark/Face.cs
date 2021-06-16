@@ -30,10 +30,7 @@ namespace Subdivision.Core
 
         private List<Point> GetAllPointsInWindingOrder()
         {
-            //return Edges.SelectMany(e => e.Points).Distinct().ToList();
             List<Point> points = new List<Point>();
-            // The edges were added in order, but we don't know if the points within the edges are in order. 
-            // Therefore we look at the previous edge to figoure out which point has allready been visited
 
             Edge previous = Edges.First();
             foreach (Edge current in Edges.Skip(1).Take(Edges.Count - 2))

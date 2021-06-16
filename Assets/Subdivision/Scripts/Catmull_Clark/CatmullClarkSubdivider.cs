@@ -21,16 +21,7 @@ namespace Subdivision.Core
             //Creation des Vertexpoint utilisant la formule du cours
             CreateVertexPoints(shape);
 
-            //for a triangle face (a,b,c): 
-            //   (a, edge_pointab, face_pointabc, edge_pointca)
-            //   (b, edge_pointbc, face_pointabc, edge_pointab)
-            //   (c, edge_pointca, face_pointabc, edge_pointbc)
-
-            //for a quad face (a,b,c,d): 
-            //   (a, edge_pointab, face_pointabcd, edge_pointda)
-            //   (b, edge_pointbc, face_pointabcd, edge_pointab)
-            //   (c, edge_pointcd, face_pointabcd, edge_pointbc)
-            //   (d, edge_pointda, face_pointabcd, edge_pointcd)
+            //Creation de la nouvelle face
             CreateFaces(shape, subdivided);
 
             return subdivided;
@@ -160,11 +151,10 @@ namespace Subdivision.Core
             Point b = points[1].Successor;
             Point c = points[2].Successor;
 
-            //for a triangle face (a,b,c): 
+            //pour un triangle face (a,b,c): 
             //   (a, edge_pointab, face_pointabc, edge_pointca)
             //   (b, edge_pointbc, face_pointabc, edge_pointab)
             //   (c, edge_pointca, face_pointabc, edge_pointbc)
-            Point facePoint = face.FacePoint;
 
             subdivided.Faces.Add(SubdivisionUtilities.CreateFaceF(existingEdges, a, face.Edges[0].EdgePoint, face.Edges[2].EdgePoint));
             subdivided.Faces.Add(SubdivisionUtilities.CreateFaceF(existingEdges, b, face.Edges[1].EdgePoint, face.Edges[0].EdgePoint));
@@ -177,7 +167,7 @@ namespace Subdivision.Core
         private void CreateQuadFace(List<Edge> existingEdges, Shape subdivided, Face face)
         {
             //                  0 1 2 -> 3 
-            //for a quad face (a,b,c,d): 
+            //pour un quad face (a,b,c,d): 
             //   (a, edge_pointab, face_pointabcd, edge_pointda)
             //   (b, edge_pointbc, face_pointabcd, edge_pointab)
             //   (c, edge_pointcd, face_pointabcd, edge_pointbc)

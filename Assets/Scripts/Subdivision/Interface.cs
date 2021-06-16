@@ -85,6 +85,9 @@ namespace Subdivision
 
                         actualPrefab = kvp.Value;
 
+                        MeshRenderer rend = go.GetComponent<MeshRenderer>();
+                        rend.material = new Material(Shader.Find(material ? "VR/SpatialMapping/Wireframe" : "Standard"));
+
                         // Catmull-Clark
                         actualGo = go;
                         MeshFilter viewedModelFilter = (MeshFilter)actualGo.GetComponent("MeshFilter");
@@ -171,35 +174,39 @@ namespace Subdivision
 
             if (GUILayout.Button("Charles Loop's algorithm"))
             {
-                Debug.Log("Charles Loop's algorithm");
-                // get cube mesh
-                MeshFilter viewedModelFilter = (MeshFilter)actualPrefab.GetComponent("MeshFilter");
-                Mesh mesh = viewedModelFilter.sharedMesh;
-                // get triangle list
-                List<Triangle> triangles = new List<Triangle>();
-                for(int i = 0; i < mesh.triangles.Length; i+=3) {
-                    int iA = mesh.triangles[i];
-                    int iB = mesh.triangles[i + 1];
-                    int iC = mesh.triangles[i + 2];
-                    Vector3 vA = mesh.vertices[iA];
-                    Vector3 vB = mesh.vertices[iB];
-                    Vector3 vC = mesh.vertices[iC];
-                    triangles.Add(new Triangle(vA, vB, vC));
+                if (actualPrefab != null)
+                {
+                    Debug.Log("Charles Loop's algorithm");
+                    
+                    // get cube mesh
+                    MeshFilter viewedModelFilter = (MeshFilter)actualPrefab.GetComponent("MeshFilter");
+                    Mesh mesh = viewedModelFilter.sharedMesh;
+
+                    // get triangle list
+                    List<Triangle> triangles = new List<Triangle>();
+                    for (int i = 0; i < mesh.triangles.Length; i += 3)
+                    {
+                        int iA = mesh.triangles[i];
+                        int iB = mesh.triangles[i + 1];
+                        int iC = mesh.triangles[i + 2];
+
+                        Vector3 vA = mesh.vertices[iA];
+                        Vector3 vB = mesh.vertices[iB];
+                        Vector3 vC = mesh.vertices[iC];
+
+                        triangles.Add(new Triangle(vA, vB, vC));
+                    }
+
+                    for (int i = 0; i < subDivision; i++)
+                    {
+                        // perturbate points
+                        List<Triangle> disturbedTriangles = CharlesLoops.getDisturbedTriangles(in triangles);
+                        triangles = CharlesLoops.subdivideByEdge(in triangles, in disturbedTriangles);
+                    }
+
+                    GenerateMeshIndirect(in triangles);
+                    Debug.Log("Modified");
                 }
-                // get neighbors
-                // List<Vector3> neighbors = CharlesLoops.getNeighbors(triangles[0].vertices[0], ref triangles);
-                // foreach(var p in neighbors) {
-                //     Debug.Log(p);
-                // }
-                // perturbate points
-                List<Triangle> disturbedTriangles = CharlesLoops.getDisturbedTriangles(ref triangles);
-                List<Triangle> subdividedTriangles = CharlesLoops.subdivideByEdge(ref triangles, ref disturbedTriangles);
-                // apply modification
-                // for(int i = 0; i < triangles.Count; i++) {
-                //     triangles[i].vertices[0] += new Vector3(100, 0, 0);
-                // }
-                GenerateMeshIndirect(in subdividedTriangles);
-                Debug.Log("Modified");
             }
         }
 

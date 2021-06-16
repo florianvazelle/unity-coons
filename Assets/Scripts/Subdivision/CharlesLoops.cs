@@ -24,7 +24,7 @@ public static class CharlesLoops {
         return neighborhoods;
     }
 
-    public static List<Vector3> getEdgeNeighbors(Edge current_edge, Triangle current_triangle, ref List<Triangle> triangles) {
+    public static List<Vector3> getEdgeNeighbors(Edge current_edge, Triangle current_triangle, in List<Triangle> triangles) {
         List<Vector3> edgeNeighbors = new List<Vector3>();
 
         Vector3 vRight = current_triangle.vertices[current_triangle.GetOtherPoint(current_edge)];
@@ -81,29 +81,34 @@ public static class CharlesLoops {
         return diturbedTriangles;
     }
 
-    public static List<Triangle> subdivideByEdge(ref List<Triangle> triangles, ref List<Triangle> disturbedTriangles) {
+    public static List<Triangle> subdivideByEdge(in List<Triangle> triangles, in List<Triangle> disturbedTriangles) {
         List<Triangle> subdivideTriangles = new List<Triangle>();
 
         // for each triangle
         for(int i = 0; i < triangles.Count; i++) {
+            
             // create list for new vertex
             List<Vector3> e = new List<Vector3>();
+            
             // for each edge
-            for(int j = 0; j < triangles[i].edges.Count; j++) {
+            for(int j = 0; j < 3; j++) {
+                Edge current_edge = triangles[i].edges[j];
+
                 // get edge neighbors
-                List<Vector3> edgeNeighbors = getEdgeNeighbors(triangles[i].edges[j], triangles[i], ref triangles);
+                List<Vector3> edgeNeighbors = getEdgeNeighbors(current_edge, triangles[i], in triangles);
                 if(edgeNeighbors.Count != 2)
                     Debug.Log("error: didn't find neighbors");
+                
                 // create e
-                Vector3 ej = ((3f/8f) * (triangles[i].edges[j].start + triangles[i].edges[j].end)) + ((1f/8f) * (edgeNeighbors[0] + edgeNeighbors[1]));
+                Vector3 ej = ((3f/8f) * (current_edge.start + current_edge.end)) + ((1f/8f) * (edgeNeighbors[0] + edgeNeighbors[1]));
                 e.Add(ej);
             }
 
             if(e.Count != 3)
                 Debug.Log("error: error while subdivide e != 3");
 
-            Triangle t1 = new Triangle(disturbedTriangles[i].vertices[0], e[1], e[2]);
-            Triangle t2 = new Triangle(disturbedTriangles[i].vertices[1], e[0], e[2]);
+            Triangle t1 = new Triangle(disturbedTriangles[i].vertices[0], e[0], e[2]);
+            Triangle t2 = new Triangle(disturbedTriangles[i].vertices[1], e[1], e[0]);
             Triangle t3 = new Triangle(disturbedTriangles[i].vertices[2], e[2], e[1]);
             Triangle t4 = new Triangle(e[0], e[1], e[2]);
 

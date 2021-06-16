@@ -35,7 +35,7 @@ namespace Subdivision
             prefabs = new Dictionary<string, GameObject>(){
                 {"Cube", cube},
                 {"Cube Hole", cubeHole},
-                {"Camel", camel},
+                {"Quad", camel},
                 {"Cylindre 1", cyl1},
                 {"Cylindre 2", cyl2},
                 {"Icos", icos},

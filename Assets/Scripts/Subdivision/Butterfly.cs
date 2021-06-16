@@ -74,7 +74,7 @@ public static class Butterfly
             if (!edge.isEqual(current_edge)) continue;
 
             GetAdjacentFace(in triangles, current_triangle, edge, out adjacent_triangles);
-            if (adjacent_triangles.Count == 0) return v;
+            Debug.Assert(adjacent_triangles.Count != 0);
             Vector3 adjacent_faces_vertex = adjacent_triangles[0].vertices[adjacent_triangles[0].GetOtherPoint(edge)];
 
             v = v - (adjacent_faces_vertex / 16.0f);
@@ -85,7 +85,7 @@ public static class Butterfly
             if (!edge.isEqual(current_edge)) continue;
 
             GetAdjacentFace(in triangles, opposite_triangle, edge, out adjacent_triangles);
-            if (adjacent_triangles.Count == 0) return v;
+            Debug.Assert (adjacent_triangles.Count != 0);
             Vector3 adjacent_faces_vertex = adjacent_triangles[0].vertices[adjacent_triangles[0].GetOtherPoint(edge)];
 
             v = v - (adjacent_faces_vertex / 16.0f);

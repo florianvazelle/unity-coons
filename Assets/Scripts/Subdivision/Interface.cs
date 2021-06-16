@@ -67,7 +67,7 @@ namespace Subdivision
                 }
             }
 
-            subDivision = RGUI.Slider(subDivision, 1, 6, "Subdivision");
+            subDivision = RGUI.Slider(subDivision, 1, 4, "Subdivision");
 
             using (new GUILayout.HorizontalScope())
             {
